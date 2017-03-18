@@ -25,18 +25,11 @@ namespace Selenium_csharp
         [Test]
         public void Login()
         {
-            driver.Url = Resources.Url;
-            driver.FindElement(By.Id("mailbox__login")).SendKeys(Resources.Login);
-            driver.FindElement(By.Id("mailbox__login__domain")).SendKeys(Resources.Domain);
-            driver.FindElement(By.Id("mailbox__password")).SendKeys(Resources.Password);
-            driver.FindElement(By.Id("mailbox__auth__remember__checkbox")).Click();
-            driver.FindElement(By.Id("mailbox__auth__button")).Click();
-            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("PH_user-email")));
-
-            string correctEmail = "JohnDoe1990@list.ru".ToLower();
-            string email = driver.FindElement(By.Id("PH_user-email")).Text;
-
-            Assert.That(correctEmail, Is.EqualTo(email));
+            driver.Url = "http://localhost/litecart/admin/";
+            driver.FindElement(By.Name("username")).SendKeys("admin");
+            driver.FindElement(By.Name("password")).SendKeys("p@ssw0rd");
+            driver.FindElement(By.Name("login")).Click();
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@class='header']/a[@href='http://localhost/litecart/admin/logout.php']")));
         }
 
         [TearDown]
