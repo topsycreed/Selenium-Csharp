@@ -24,9 +24,9 @@ namespace Selenium_csharp
         [SetUp]
         public void start()
         {
-            var ChromeDriverLocation = AppDomain.CurrentDomain.BaseDirectory;
+            var chromeDriverLocation = AppDomain.CurrentDomain.BaseDirectory;
 
-            driver = new ChromeDriver(ChromeDriverLocation);
+            driver = new ChromeDriver(chromeDriverLocation);
             driver.Manage().Window.Maximize();
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
@@ -48,31 +48,49 @@ namespace Selenium_csharp
 
             if (AreElementsPresent(driver, By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']")))
             {
-                ReadOnlyCollection<IWebElement> PagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']"));
+                ReadOnlyCollection<IWebElement> pagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']"));
 
-                int PageCount = PagesToClick.Count();
+                int pageCount = pagesToClick.Count();
 
-                for (int i = 0; i <= PageCount - 1; i++)
+                for (int i = 0; i < pageCount; i++)
                 {
-                    PagesToClick[i].Click();
+                    pagesToClick[i].Click();
                     Assert.That(driver.FindElement(By.XPath("//h1")).Text, Is.Not.Empty);
 
                     if (AreElementsPresent(driver, By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']")))
                     {
-                        ReadOnlyCollection<IWebElement> SubPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
+                        ReadOnlyCollection<IWebElement> subPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
 
-                        int SubPageCount = SubPagesToClick.Count();
+                        int subPageCount = subPagesToClick.Count();
 
-                        for (int j = 0; j <= SubPageCount - 1; j++)
+                        for (int j = 0; j <= subPageCount - 1; j++)
                         {
-                            SubPagesToClick[j].Click();
+                            subPagesToClick[j].Click();
                             Assert.That(driver.FindElement(By.XPath("//h1")).Text, Is.Not.Empty);
-                            SubPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
+                            subPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
                         }
                     }
 
-                    PagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']"));
+                    pagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']"));
                 }
+            }
+        }
+
+        [Test]
+        public void CheckSticker()
+        {
+            driver.Url = "http://localhost/litecart/en/";
+
+            ReadOnlyCollection<IWebElement> products = driver.FindElements(By.XPath("//a[@class = 'link']/div[@class='name']/.."));
+
+            int productCount = products.Count();
+
+            for (int i = 0; i < productCount; i++)
+            {
+                var product = products[i];
+                ReadOnlyCollection<IWebElement> stickers = product.FindElements(By.XPath(".//div[contains(@class, 'sticker')]"));
+
+                Assert.That(stickers.Count(), Is.EqualTo(1));
             }
         }
 
