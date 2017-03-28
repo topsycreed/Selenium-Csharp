@@ -48,16 +48,29 @@ namespace Selenium_csharp
 
             if (AreElementsPresent(driver, By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']")))
             {
-                //List<IWebElement> linksToClick = driver.FindElement(By.Id("DivId")).FindElements(By.TagName("a")).ToList();
-
                 ReadOnlyCollection<IWebElement> PagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']"));
 
                 int PageCount = PagesToClick.Count();
 
-                //foreach (IWebElement Element in PagesToClick)
                 for (int i = 0; i <= PageCount - 1; i++)
                 {
                     PagesToClick[i].Click();
+                    Assert.That(driver.FindElement(By.XPath("//h1")).Text, Is.Not.Empty);
+
+                    if (AreElementsPresent(driver, By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']")))
+                    {
+                        ReadOnlyCollection<IWebElement> SubPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
+
+                        int SubPageCount = SubPagesToClick.Count();
+
+                        for (int j = 0; j <= SubPageCount - 1; j++)
+                        {
+                            SubPagesToClick[j].Click();
+                            Assert.That(driver.FindElement(By.XPath("//h1")).Text, Is.Not.Empty);
+                            SubPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
+                        }
+                    }
+
                     PagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']"));
                 }
             }
