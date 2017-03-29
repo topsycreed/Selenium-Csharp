@@ -60,17 +60,17 @@ namespace Selenium_csharp
                     if (AreElementsPresent(driver, By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']")))
                     {
                         ReadOnlyCollection<IWebElement> subPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
-
                         int subPageCount = subPagesToClick.Count();
 
                         for (int j = 0; j <= subPageCount - 1; j++)
                         {
                             subPagesToClick[j].Click();
                             Assert.That(driver.FindElement(By.XPath("//h1")).Text, Is.Not.Empty);
+                            //Refresh elements to avoid StaleElementsException
                             subPagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/ul//span[@class = 'name']"));
                         }
                     }
-
+                    //Refresh elements to avoid StaleElementsException
                     pagesToClick = driver.FindElements(By.XPath("//ul[@id = 'box-apps-menu']/li/a/span[@class = 'name']"));
                 }
             }
@@ -80,9 +80,7 @@ namespace Selenium_csharp
         public void CheckSticker()
         {
             driver.Url = "http://localhost/litecart/en/";
-
             ReadOnlyCollection<IWebElement> products = driver.FindElements(By.XPath("//a[@class = 'link']/div[@class='name']/.."));
-
             int productCount = products.Count();
 
             for (int i = 0; i < productCount; i++)
@@ -92,6 +90,48 @@ namespace Selenium_csharp
 
                 Assert.That(stickers.Count(), Is.EqualTo(1));
             }
+        }
+
+        [Test]
+        public void CheckCountries()
+        {
+            Login();
+
+            driver.Url = "http://localhost/litecart/admin/?app=countries&doc=countries";
+            ReadOnlyCollection<IWebElement> countryRows = driver.FindElements(By.XPath("//tr[@class = 'row']"));
+            int countryRowsCount = countryRows.Count();
+            List<string> countriesName = new List<string>();
+
+            for (int i = 0; i < countryRowsCount; i++)
+            {
+                var country = countryRows[i].FindElement(By.XPath(".//a[string-length(text()) > 0]"));
+                var zones = countryRows[i].FindElement(By.XPath(".//td[6]"));
+                int zonesCount = Int32.Parse(zones.GetAttribute("innerText"));
+
+                countriesName.Add(country.GetAttribute("innerText"));
+
+                if (zonesCount > 0)
+                {
+                    country.Click();
+
+                    ReadOnlyCollection<IWebElement> zoneRows = driver.FindElements(By.XPath("//table[@id = 'table-zones']//tr//input[contains(@name, 'zones')]/../.."));
+                    int zoneRowsCount = zoneRows.Count();
+                    List<string> zonesName = new List<string>();
+
+                    for (int j = 0; j < zoneRowsCount; j++)
+                    {
+                        var zone = zoneRows[j].FindElement(By.XPath(".//input[contains(@name, '[name]')]"));
+
+                        zonesName.Add(zone.GetAttribute("defaultValue"));
+                    }
+                    Assert.That(zonesName, Is.Ordered);
+                    driver.Navigate().Back();
+                    //Refresh elements to avoid StaleElementsException
+                    countryRows = driver.FindElements(By.XPath("//tr[@class = 'row']"));
+                }
+            }
+
+            Assert.That(countriesName, Is.Ordered);
         }
 
         [TearDown]
