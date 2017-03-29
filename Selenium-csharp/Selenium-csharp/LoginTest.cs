@@ -134,6 +134,43 @@ namespace Selenium_csharp
             Assert.That(countriesName, Is.Ordered);
         }
 
+        [Test]
+        public void CheckGeoZones()
+        {
+            Login();
+
+            driver.Url = "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones";
+            ReadOnlyCollection<IWebElement> countryRows = driver.FindElements(By.XPath("//tr[@class = 'row']"));
+            int countryRowsCount = countryRows.Count();
+
+            for (int i = 0; i < countryRowsCount; i++)
+            {
+                var country = countryRows[i].FindElement(By.XPath(".//a[string-length(text()) > 0]"));
+                var zones = countryRows[i].FindElement(By.XPath(".//td[4]"));
+                int zonesCount = Int32.Parse(zones.GetAttribute("innerText"));
+
+                if (zonesCount > 0)
+                {
+                    country.Click();
+
+                    ReadOnlyCollection<IWebElement> zoneRows = driver.FindElements(By.XPath("//table[@id = 'table-zones']//tr//input[contains(@name, 'zones')]/../.."));
+                    int zoneRowsCount = zoneRows.Count();
+                    List<string> zonesName = new List<string>();
+
+                    for (int j = 0; j < zoneRowsCount; j++)
+                    {
+                        var zone = zoneRows[j].FindElement(By.XPath(".//select[contains(@name, 'zone_code')]/option[@selected = 'selected']"));
+
+                        zonesName.Add(zone.GetAttribute("innerText"));
+                    }
+                    Assert.That(zonesName, Is.Ordered);
+                    driver.Navigate().Back();
+                    //Refresh elements to avoid StaleElementsException
+                    countryRows = driver.FindElements(By.XPath("//tr[@class = 'row']"));
+                }
+            }         
+        }
+
         [TearDown]
         public void Stop()
         {
