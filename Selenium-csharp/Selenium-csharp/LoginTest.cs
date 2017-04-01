@@ -237,6 +237,61 @@ namespace Selenium_csharp
             Assert.That(FontHelpers.GetFontSizeValue(fontSizeCampaignPriceProductPage), Is.GreaterThan(FontHelpers.GetFontSizeValue(fontSizeRegularPriceProductPage)));
         }
 
+        [Test]
+        public void RegisterUser()
+        {
+            driver.Url = "http://localhost/litecart/en/create_account";
+            //Генерация уникального email
+            string generatedEmail = "gena" + DateTime.Now.ToString("hmmsstt") + "@mail.ru";
+            string _password = "password";
+
+            IWebElement firstName = driver.FindElement(By.XPath("//input[@name = 'firstname']"));
+            IWebElement lastName = driver.FindElement(By.XPath("//input[@name = 'lastname']"));
+            IWebElement address1 = driver.FindElement(By.XPath("//input[@name = 'address1']"));
+            IWebElement postcode = driver.FindElement(By.XPath("//input[@name = 'postcode']"));
+            IWebElement city = driver.FindElement(By.XPath("//input[@name = 'city']"));
+            IWebElement country = driver.FindElement(By.XPath("//span[@role = 'combobox']"));
+            
+            IWebElement email = driver.FindElement(By.XPath("//input[@name = 'email']"));
+            IWebElement phone = driver.FindElement(By.XPath("//input[@name = 'phone']"));
+            IWebElement password = driver.FindElement(By.XPath("//input[@name = 'password']"));
+            IWebElement confirmedPassword = driver.FindElement(By.XPath("//input[@name = 'confirmed_password']"));
+            IWebElement createAccount = driver.FindElement(By.XPath("//button[@name = 'create_account']"));
+
+            firstName.SendKeys("Gena");
+            lastName.SendKeys("Topsycreed");
+            address1.SendKeys("Saratov");
+            postcode.SendKeys("41009");
+            city.SendKeys("Saratov");
+            //Выбор элемента из списка
+            country.Click();
+            driver.FindElement(By.XPath("//input[@type = 'search']")).SendKeys("United States");
+            driver.FindElement(By.XPath(".//li[text() = 'United States']")).Click();
+
+            email.SendKeys(generatedEmail);
+            phone.SendKeys("+79196215502");
+            password.SendKeys(_password);
+            confirmedPassword.SendKeys("password");
+
+            createAccount.Click();
+
+            IWebElement logout = driver.FindElement(By.XPath("//a[contains(@href,'logout')]"));
+
+            logout.Click();
+            //Логин с данными из регистрации
+            IWebElement emailLogin = driver.FindElement(By.XPath("//input[@name = 'email']"));
+            IWebElement passwordLogin = driver.FindElement(By.XPath("//input[@name = 'password']"));
+            IWebElement login = driver.FindElement(By.XPath("//button[@name = 'login']"));
+
+            emailLogin.SendKeys(generatedEmail);
+            passwordLogin.SendKeys(_password);
+            login.Click();
+
+            //Обновление ссылки на logout
+            logout = driver.FindElement(By.XPath("//a[contains(@href,'logout')]"));
+            logout.Click();
+        }
+
         [TearDown]
         public void Stop()
         {
