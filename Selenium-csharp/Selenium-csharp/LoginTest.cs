@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Selenium_csharp.Helpers;
 
 namespace Selenium_csharp
 {
@@ -169,6 +170,71 @@ namespace Selenium_csharp
                     countryRows = driver.FindElements(By.XPath("//tr[@class = 'row']"));
                 }
             }         
+        }
+
+        [Test]
+        public void CheckProduct()
+        {
+            driver.Url = "http://localhost/litecart/en/";
+
+            //Первый товар в разделе Campaigns
+            IWebElement product = driver.FindElement(By.XPath("//div[@id = 'box-campaigns']//a[@class = 'link']/div[@class='name']/.."));
+
+            //Текст названия товара на главной
+            string nameMainPage = product.FindElement(By.XPath(".//div[@class = 'name']")).GetAttribute("innerText");
+            //Акционная цена на главной
+            IWebElement campaignPriceMainPage = product.FindElement(By.XPath(".//strong[@class = 'campaign-price']"));
+            //Обычная цена на главной
+            IWebElement regularPriceMainPage = product.FindElement(By.XPath(".//s[@class = 'regular-price']"));
+            //Размер акционной цены на главной
+            string valueOfCampaignPriceMainPage = campaignPriceMainPage.GetAttribute("innerText");
+            //Размер обычной цены на главной
+            string valueOfRegularPriceMainPage = regularPriceMainPage.GetAttribute("innerText");
+            //Цвет акционной цены на главной
+            string colorCampaignPriceMainPage = campaignPriceMainPage.GetCssValue("color");
+            //Цвет обычной цены на главной
+            string colorRegularPriceMainPage = regularPriceMainPage.GetCssValue("color");
+            //Размер акционной цены на главной
+            string fontSizeCampaignPriceMainPage = campaignPriceMainPage.GetCssValue("font-size");
+            //Размер обычной цены на главной
+            string fontSizeRegularPriceMainPage = regularPriceMainPage.GetCssValue("font-size");
+
+            //Asserts on main page
+            Assert.That(ColorHelpers.isGray(colorRegularPriceMainPage), Is.True);
+            Assert.That(ColorHelpers.isRed(colorCampaignPriceMainPage), Is.True);
+            Assert.That(FontHelpers.GetFontSizeValue(fontSizeCampaignPriceMainPage), Is.GreaterThan(FontHelpers.GetFontSizeValue(fontSizeRegularPriceMainPage)));
+
+            product.Click();
+
+            //Блок с описанием товара на странице товара
+            IWebElement productBox = driver.FindElement(By.XPath("//div[@id = 'box-product']"));
+
+            //Текст названия товара на странице товара
+            string nameProductPage = productBox.FindElement(By.XPath(".//h1")).GetAttribute("innerText");
+            //Акционная цена на странице товара
+            IWebElement campaignPriceProductPage = productBox.FindElement(By.XPath(".//strong[@class = 'campaign-price']"));
+            //Обычная цена на странице товара
+            IWebElement regularPriceProductPage = productBox.FindElement(By.XPath(".//s[@class = 'regular-price']"));
+            //Размер акционной цены на странице товара
+            string valueOfCampaignPriceProductPage = campaignPriceProductPage.GetAttribute("innerText");
+            //Размер обычной цены на странице товара
+            string valueOfRegularPriceProductPage = regularPriceProductPage.GetAttribute("innerText");
+            //Цвет акционной цены на странице товара
+            string colorCampaignPriceProductPage = campaignPriceProductPage.GetCssValue("color");
+            //Цвет обычной цены на странице товара
+            string colorRegularPriceProductPage = regularPriceProductPage.GetCssValue("color");
+            //Размер акционной цены на странице товара
+            string fontSizeCampaignPriceProductPage = campaignPriceProductPage.GetCssValue("font-size");
+            //Размер обычной цены на странице товара
+            string fontSizeRegularPriceProductPage = regularPriceProductPage.GetCssValue("font-size");
+
+            //Asserts on product page
+            Assert.That(nameMainPage, Is.EqualTo(nameProductPage));
+            Assert.That(valueOfCampaignPriceMainPage, Is.EqualTo(valueOfCampaignPriceProductPage));
+            Assert.That(valueOfRegularPriceMainPage, Is.EqualTo(valueOfRegularPriceProductPage));
+            Assert.That(ColorHelpers.isGray(colorRegularPriceProductPage), Is.True);
+            Assert.That(ColorHelpers.isRed(colorCampaignPriceProductPage), Is.True);
+            Assert.That(FontHelpers.GetFontSizeValue(fontSizeCampaignPriceProductPage), Is.GreaterThan(FontHelpers.GetFontSizeValue(fontSizeRegularPriceProductPage)));
         }
 
         [TearDown]

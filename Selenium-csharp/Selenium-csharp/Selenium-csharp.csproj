@@ -65,6 +65,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Helpers\ColorHelpers.cs" />
+    <Compile Include="Helpers\FontHelpers.cs" />
     <Compile Include="LoginTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
