@@ -61,38 +61,12 @@ namespace Selenium_csharp.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на @list.ru.
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static string Domain {
+        internal static System.Drawing.Bitmap rubic {
             get {
-                return ResourceManager.GetString("Domain", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на JohnDoe1990.
-        /// </summary>
-        internal static string Login {
-            get {
-                return ResourceManager.GetString("Login", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на INeedSomePassword.
-        /// </summary>
-        internal static string Password {
-            get {
-                return ResourceManager.GetString("Password", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на https://mail.ru/.
-        /// </summary>
-        internal static string Url {
-            get {
-                return ResourceManager.GetString("Url", resourceCulture);
+                object obj = ResourceManager.GetObject("rubic", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

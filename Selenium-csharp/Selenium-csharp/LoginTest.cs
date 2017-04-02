@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Selenium_csharp.Helpers;
+using System.IO;
 
 namespace Selenium_csharp
 {
@@ -169,7 +170,7 @@ namespace Selenium_csharp
                     //Refresh elements to avoid StaleElementsException
                     countryRows = driver.FindElements(By.XPath("//tr[@class = 'row']"));
                 }
-            }         
+            }
         }
 
         [Test]
@@ -251,7 +252,7 @@ namespace Selenium_csharp
             IWebElement postcode = driver.FindElement(By.XPath("//input[@name = 'postcode']"));
             IWebElement city = driver.FindElement(By.XPath("//input[@name = 'city']"));
             IWebElement country = driver.FindElement(By.XPath("//span[@role = 'combobox']"));
-            
+
             IWebElement email = driver.FindElement(By.XPath("//input[@name = 'email']"));
             IWebElement phone = driver.FindElement(By.XPath("//input[@name = 'phone']"));
             IWebElement password = driver.FindElement(By.XPath("//input[@name = 'password']"));
@@ -290,6 +291,96 @@ namespace Selenium_csharp
             //Обновление ссылки на logout
             logout = driver.FindElement(By.XPath("//a[contains(@href,'logout')]"));
             logout.Click();
+        }
+
+        [Test]
+        public void AddProduct()
+        {
+            Login();
+
+            IWebElement catalog = driver.FindElement(By.XPath("//span[@class = 'name' and text() = 'Catalog']"));
+
+            catalog.Click();
+
+            IWebElement addNewProduct = driver.FindElement(By.XPath("//a[@class = 'button' and contains(@href, 'edit_product')]"));
+
+            addNewProduct.Click();
+
+            IWebElement nameOfProduct = driver.FindElement(By.XPath("//input[@name = 'name[en]']"));
+            IWebElement codeOfProduct = driver.FindElement(By.XPath("//input[@name = 'code']"));
+            IWebElement femaleChecbox = driver.FindElement(By.XPath("//input[@name = 'product_groups[]' and @type = 'checkbox' and @value = '1-2']"));
+            IWebElement maleChecbox = driver.FindElement(By.XPath("//input[@name = 'product_groups[]' and @type = 'checkbox' and @value = '1-1']"));
+            IWebElement unisexChecbox = driver.FindElement(By.XPath("//input[@name = 'product_groups[]' and @type = 'checkbox' and @value = '1-3']"));
+            IWebElement quantity = driver.FindElement(By.XPath("//input[@name = 'quantity']"));
+            //IWebElement quantityUnit = driver.FindElement(By.XPath("//select[@name = 'quantity_unit_id']"));
+            //IWebElement deliveryStatus = driver.FindElement(By.XPath("//select[@name = 'delivery_status_id']"));
+            //IWebElement soldOutStatus = driver.FindElement(By.XPath("//select[@name = 'sold_out_status_id']"));
+            IWebElement chouseFile = driver.FindElement(By.XPath("//input[@name = 'new_images[]']"));
+            IWebElement dataValidFrom = driver.FindElement(By.XPath("//input[@name = 'date_valid_from']"));
+            IWebElement dataValidTo = driver.FindElement(By.XPath("//input[@name = 'date_valid_to']"));
+
+            nameOfProduct.SendKeys("Test");
+            codeOfProduct.SendKeys("123");
+            femaleChecbox.Click();
+            maleChecbox.Click();
+            unisexChecbox.Click();
+            quantity.SendKeys("10");
+
+            //Загрузка изображения
+            string RunningPath = AppDomain.CurrentDomain.BaseDirectory;
+            string FileName = string.Format("{0}Resources\\rubic.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\")));
+            chouseFile.SendKeys(FileName);
+
+            dataValidFrom.SendKeys("02.04.2017");
+            dataValidTo.SendKeys("03.04.2017");
+
+            IWebElement information = driver.FindElement(By.XPath("//a[@href = '#tab-information']"));
+
+            information.Click();
+            
+            IWebElement manufacter = driver.FindElement(By.XPath("//select[@name = 'manufacturer_id']"));
+            IWebElement keywords = driver.FindElement(By.XPath("//input[@name = 'keywords']"));
+            IWebElement shortDescription = driver.FindElement(By.XPath("//input[@name = 'short_description[en]']"));
+            IWebElement description = driver.FindElement(By.XPath("//div[@class = 'trumbowyg-editor']"));
+            IWebElement headTitle = driver.FindElement(By.XPath("//input[@name = 'head_title[en]']"));
+            IWebElement metaDescription = driver.FindElement(By.XPath("//input[@name = 'meta_description[en]']"));
+
+            //Заполнение селекта
+            SelectElement selectManufacter = new SelectElement(manufacter);
+            selectManufacter.SelectByText("ACME Corp.");
+
+            keywords.SendKeys("rubic");
+            shortDescription.SendKeys("Test short description");
+            description.SendKeys("Test full description");
+            headTitle.SendKeys("Title");
+            metaDescription.SendKeys("meta desc");
+
+            IWebElement prices = driver.FindElement(By.XPath("//a[@href = '#tab-prices']"));
+
+            prices.Click();
+
+            IWebElement price = driver.FindElement(By.XPath("//input[@name = 'purchase_price']"));
+            IWebElement priceType = driver.FindElement(By.XPath("//select[@name = 'purchase_price_currency_code']"));
+
+
+            price.SendKeys("10");
+            //Заполнение селекта
+            SelectElement selectpriceType = new SelectElement(priceType);
+            selectpriceType.SelectByText("US Dollars");
+
+            IWebElement save = driver.FindElement(By.XPath("//button[@name = 'save']"));
+
+            save.Click();
+
+            IWebElement addedProduct = driver.FindElement(By.XPath("//a[text() = 'Test']"));
+
+            addedProduct.Click();
+
+            IWebElement delete = driver.FindElement(By.XPath("//button[@name = 'delete']"));
+
+            delete.Click();
+            IAlert alert = driver.SwitchTo().Alert();
+            alert.Accept();
         }
 
         [TearDown]
