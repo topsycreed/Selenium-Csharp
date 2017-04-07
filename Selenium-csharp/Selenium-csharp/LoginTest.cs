@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Selenium_csharp.Helpers;
 using System.IO;
+using System.Threading;
 
 namespace Selenium_csharp
 {
@@ -473,6 +474,49 @@ namespace Selenium_csharp
             }
 
             Assert.That(driver.FindElement(By.XPath("//em")).Text, Is.EqualTo("There are no items in your cart."));
+        }
+
+        [Test]
+        public void CheckOpenInNewWindows()
+        {
+            Login();
+
+            IWebElement CountriesPage = driver.FindElement(By.XPath("//span[text() = 'Countries']"));
+            CountriesPage.Click();
+
+            IWebElement AddNewCountryButton = driver.FindElement(By.XPath("//a[@class = 'button' and contains(@href, 'edit_country')]"));
+            AddNewCountryButton.Click();
+
+            ReadOnlyCollection<IWebElement> externalLinks = driver.FindElements(By.XPath("//i[@class = 'fa fa-external-link']"));
+
+            //Get Id of current active window
+            string mainWindow = driver.CurrentWindowHandle;
+
+            for (int i = 0; i < externalLinks.Count(); i++)
+            {
+                externalLinks[i].Click();
+                //wait until new window will opened
+                wait.Until(driver => driver.WindowHandles.Count() == 2);
+
+                ReadOnlyCollection<string> Windows = driver.WindowHandles;
+                //find index of new window in windows collection and switch to it
+                for (int j = 0; j < Windows.Count(); j++)
+                {
+                    if (Windows[j] != mainWindow)
+                    {
+                        driver.SwitchTo().Window(Windows[j].ToString());
+                    }
+                }
+                //sleep to see that new windows really opens
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+
+                //close new window and set main window active
+                driver.Close();
+                driver.SwitchTo().Window(mainWindow);
+
+                //Refresh externalLinks to avoid StaleElementsException
+                externalLinks = driver.FindElements(By.XPath("//i[@class = 'fa fa-external-link']"));
+            }
         }
 
         [TearDown]
