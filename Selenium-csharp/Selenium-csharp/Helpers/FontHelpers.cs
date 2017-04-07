@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Selenium_csharp.Helpers
 {
+    // TODO: Rewrite using regular expression
     /// <summary>
     /// This class helps using comparison operators on font sizes
     /// </summary>

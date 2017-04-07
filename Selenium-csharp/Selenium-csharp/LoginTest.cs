@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using Selenium_csharp.Properties;
 using System;
@@ -29,6 +30,10 @@ namespace Selenium_csharp
             var chromeDriverLocation = AppDomain.CurrentDomain.BaseDirectory;
 
             driver = new ChromeDriver(chromeDriverLocation);
+
+            //FirefoxDriverService service = FirefoxDriverService.CreateDefaultService(AppDomain.CurrentDomain.BaseDirectory, "geckodriver.exe");
+            //driver = new FirefoxDriver(service);
+
             driver.Manage().Window.Maximize();
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
@@ -108,7 +113,7 @@ namespace Selenium_csharp
             {
                 var country = countryRows[i].FindElement(By.XPath(".//a[string-length(text()) > 0]"));
                 var zones = countryRows[i].FindElement(By.XPath(".//td[6]"));
-                int zonesCount = Int32.Parse(zones.GetAttribute("innerText"));
+                int zonesCount = int.Parse(zones.GetAttribute("innerText"));
 
                 countriesName.Add(country.GetAttribute("innerText"));
 
@@ -149,7 +154,7 @@ namespace Selenium_csharp
             {
                 var country = countryRows[i].FindElement(By.XPath(".//a[string-length(text()) > 0]"));
                 var zones = countryRows[i].FindElement(By.XPath(".//td[4]"));
-                int zonesCount = Int32.Parse(zones.GetAttribute("innerText"));
+                int zonesCount = int.Parse(zones.GetAttribute("innerText"));
 
                 if (zonesCount > 0)
                 {
@@ -178,58 +183,42 @@ namespace Selenium_csharp
         {
             driver.Url = "http://localhost/litecart/en/";
 
-            //Первый товар в разделе Campaigns
+            //First product in Campaigns
             IWebElement product = driver.FindElement(By.XPath("//div[@id = 'box-campaigns']//a[@class = 'link']/div[@class='name']/.."));
 
-            //Текст названия товара на главной
+            //Get elements and attributes from Main page
             string nameMainPage = product.FindElement(By.XPath(".//div[@class = 'name']")).GetAttribute("innerText");
-            //Акционная цена на главной
             IWebElement campaignPriceMainPage = product.FindElement(By.XPath(".//strong[@class = 'campaign-price']"));
-            //Обычная цена на главной
             IWebElement regularPriceMainPage = product.FindElement(By.XPath(".//s[@class = 'regular-price']"));
-            //Размер акционной цены на главной
             string valueOfCampaignPriceMainPage = campaignPriceMainPage.GetAttribute("innerText");
-            //Размер обычной цены на главной
             string valueOfRegularPriceMainPage = regularPriceMainPage.GetAttribute("innerText");
-            //Цвет акционной цены на главной
             string colorCampaignPriceMainPage = campaignPriceMainPage.GetCssValue("color");
-            //Цвет обычной цены на главной
             string colorRegularPriceMainPage = regularPriceMainPage.GetCssValue("color");
-            //Размер акционной цены на главной
             string fontSizeCampaignPriceMainPage = campaignPriceMainPage.GetCssValue("font-size");
-            //Размер обычной цены на главной
             string fontSizeRegularPriceMainPage = regularPriceMainPage.GetCssValue("font-size");
 
-            //Asserts on main page
+            //Asserts on Main page
             Assert.That(ColorHelpers.isGray(colorRegularPriceMainPage), Is.True);
             Assert.That(ColorHelpers.isRed(colorCampaignPriceMainPage), Is.True);
             Assert.That(FontHelpers.GetFontSizeValue(fontSizeCampaignPriceMainPage), Is.GreaterThan(FontHelpers.GetFontSizeValue(fontSizeRegularPriceMainPage)));
 
             product.Click();
 
-            //Блок с описанием товара на странице товара
+            //Product box on Product page
             IWebElement productBox = driver.FindElement(By.XPath("//div[@id = 'box-product']"));
 
-            //Текст названия товара на странице товара
+            //Get elements and attributes from Product page
             string nameProductPage = productBox.FindElement(By.XPath(".//h1")).GetAttribute("innerText");
-            //Акционная цена на странице товара
             IWebElement campaignPriceProductPage = productBox.FindElement(By.XPath(".//strong[@class = 'campaign-price']"));
-            //Обычная цена на странице товара
             IWebElement regularPriceProductPage = productBox.FindElement(By.XPath(".//s[@class = 'regular-price']"));
-            //Размер акционной цены на странице товара
             string valueOfCampaignPriceProductPage = campaignPriceProductPage.GetAttribute("innerText");
-            //Размер обычной цены на странице товара
             string valueOfRegularPriceProductPage = regularPriceProductPage.GetAttribute("innerText");
-            //Цвет акционной цены на странице товара
             string colorCampaignPriceProductPage = campaignPriceProductPage.GetCssValue("color");
-            //Цвет обычной цены на странице товара
             string colorRegularPriceProductPage = regularPriceProductPage.GetCssValue("color");
-            //Размер акционной цены на странице товара
             string fontSizeCampaignPriceProductPage = campaignPriceProductPage.GetCssValue("font-size");
-            //Размер обычной цены на странице товара
             string fontSizeRegularPriceProductPage = regularPriceProductPage.GetCssValue("font-size");
 
-            //Asserts on product page
+            //Asserts on Product page
             Assert.That(nameMainPage, Is.EqualTo(nameProductPage));
             Assert.That(valueOfCampaignPriceMainPage, Is.EqualTo(valueOfCampaignPriceProductPage));
             Assert.That(valueOfRegularPriceMainPage, Is.EqualTo(valueOfRegularPriceProductPage));
@@ -242,7 +231,8 @@ namespace Selenium_csharp
         public void RegisterUser()
         {
             driver.Url = "http://localhost/litecart/en/create_account";
-            //Генерация уникального email
+
+            //Generation of unique email
             string generatedEmail = "gena" + DateTime.Now.ToString("hmmsstt") + "@mail.ru";
             string _password = "password";
 
@@ -264,7 +254,8 @@ namespace Selenium_csharp
             address1.SendKeys("Saratov");
             postcode.SendKeys("41009");
             city.SendKeys("Saratov");
-            //Выбор элемента из списка
+
+            //Get element from select without using SelectElement
             country.Click();
             driver.FindElement(By.XPath("//input[@type = 'search']")).SendKeys("United States");
             driver.FindElement(By.XPath(".//li[text() = 'United States']")).Click();
@@ -279,7 +270,8 @@ namespace Selenium_csharp
             IWebElement logout = driver.FindElement(By.XPath("//a[contains(@href,'logout')]"));
 
             logout.Click();
-            //Логин с данными из регистрации
+
+            //Login with data from registration
             IWebElement emailLogin = driver.FindElement(By.XPath("//input[@name = 'email']"));
             IWebElement passwordLogin = driver.FindElement(By.XPath("//input[@name = 'password']"));
             IWebElement login = driver.FindElement(By.XPath("//button[@name = 'login']"));
@@ -288,7 +280,7 @@ namespace Selenium_csharp
             passwordLogin.SendKeys(_password);
             login.Click();
 
-            //Обновление ссылки на logout
+            //Refresh logout to avoid StaleElementsException
             logout = driver.FindElement(By.XPath("//a[contains(@href,'logout')]"));
             logout.Click();
         }
@@ -326,7 +318,7 @@ namespace Selenium_csharp
             unisexChecbox.Click();
             quantity.SendKeys("10");
 
-            //Загрузка изображения
+            //Upload image
             string RunningPath = AppDomain.CurrentDomain.BaseDirectory;
             string FileName = string.Format("{0}Resources\\rubic.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\")));
             chouseFile.SendKeys(FileName);
@@ -345,7 +337,7 @@ namespace Selenium_csharp
             IWebElement headTitle = driver.FindElement(By.XPath("//input[@name = 'head_title[en]']"));
             IWebElement metaDescription = driver.FindElement(By.XPath("//input[@name = 'meta_description[en]']"));
 
-            //Заполнение селекта
+            //Select element using SelectElement
             SelectElement selectManufacter = new SelectElement(manufacter);
             selectManufacter.SelectByText("ACME Corp.");
 
@@ -364,7 +356,8 @@ namespace Selenium_csharp
 
 
             price.SendKeys("10");
-            //Заполнение селекта
+
+            //Select element using SelectElement
             SelectElement selectpriceType = new SelectElement(priceType);
             selectpriceType.SelectByText("US Dollars");
 
@@ -379,8 +372,107 @@ namespace Selenium_csharp
             IWebElement delete = driver.FindElement(By.XPath("//button[@name = 'delete']"));
 
             delete.Click();
+
+            //Accept alert
             IAlert alert = driver.SwitchTo().Alert();
             alert.Accept();
+        }
+
+        [Test]
+        public void DeleteItemFromRecycleBin()
+        {
+            driver.Url = "http://localhost/litecart/en/";
+
+            for (int i = 0; i < 3; i++)
+            {
+                //First product (may be different becouse list change order every time)
+                IWebElement product = driver.FindElement(By.XPath("//a[@class = 'link']/div[@class='name']/.."));
+
+                product.Click();
+
+                //If page contains required field Size - fill it
+                if (AreElementsPresent(driver, By.XPath("//select[@name = 'options[Size]']")))
+                {
+                    IWebElement size = driver.FindElement(By.XPath("//select[@name = 'options[Size]']"));
+                    SelectElement selectSize = new SelectElement(size);
+                    selectSize.SelectByText("Small");
+                }
+
+                IWebElement addToCart = driver.FindElement(By.XPath("//button[@name = 'add_cart_product']"));
+
+                //Quantity of adding product (by default = 1)
+                IWebElement productQuantityElement = driver.FindElement(By.XPath("//div[@class = 'content']//input[@name = 'quantity']"));
+                int productQuantity = int.Parse(productQuantityElement.GetAttribute("valueAsNumber"));
+
+                //Quantity of already added product in Cart
+                IWebElement cart = driver.FindElement(By.XPath("//span[@class = 'quantity']"));
+                int cartQuantity = int.Parse(cart.GetAttribute("innerText"));
+
+                addToCart.Click();
+                //Wait to check, that quantity in Cart increased by Quantity value from product
+                wait.Until(e => int.Parse(e.FindElement(By.XPath("//span[@class = 'quantity']")).GetAttribute("innerText")).Equals(cartQuantity + productQuantity));
+            }
+
+            IWebElement checkout = driver.FindElement(By.XPath("//a[@class = 'link' and contains(@href, 'checkout')]"));
+
+            checkout.Click();
+
+            //Read forms with product
+            ReadOnlyCollection<IWebElement> itemsForm = driver.FindElements(By.XPath("//form[@name = 'cart_form']"));
+
+            if (itemsForm.Count() > 1)
+            {
+                for (int i = 0; i < itemsForm.Count(); i++)
+                {
+                    IWebElement itemRemoveButton = itemsForm[i].FindElement(By.XPath(".//button[@name = 'remove_cart_item']"));
+
+                    IWebElement itemNameElement = itemsForm[i].FindElement(By.XPath(".//strong"));
+                    string itemName = itemNameElement.GetAttribute("innerText");
+
+                    //Read shortcats of products
+                    IWebElement shortcatForm = driver.FindElement(By.XPath("//ul[@class = 'shortcuts']"));
+                    ReadOnlyCollection<IWebElement> shortcats = shortcatForm.FindElements(By.XPath(".//a"));
+
+                    int j = 0;
+
+                    //Run through the list of shortcats to fing product with clickable remove
+                    while (!itemRemoveButton.Displayed && j < shortcats.Count())
+                    {
+                        try
+                        {
+                            shortcats[j].Click();
+                            WebDriverWait waitForRemove = new WebDriverWait(driver, TimeSpan.FromSeconds(1));
+                            waitForRemove.Until(ExpectedConditions.ElementToBeClickable(itemRemoveButton));
+                        }
+                        catch (WebDriverTimeoutException)
+                        {
+                            j++;
+                        }
+                    }
+                    itemRemoveButton.Click();
+
+                    //Wait to check that product also deleted from table
+                    wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.XPath("//td[@class = 'item' and text() = '" + itemName + "']")));
+
+                    //Refresh product forms to avoid StaleElementException
+                    itemsForm = driver.FindElements(By.XPath("//form[@name = 'cart_form']"));
+                }
+            }
+
+            //If finded/left only 1 form - there is no shortcats, just click delete button
+            if (itemsForm.Count() == 1)
+            {
+                IWebElement itemRemoveButton = itemsForm[0].FindElement(By.XPath(".//button[@name = 'remove_cart_item']"));
+
+                IWebElement itemNameElement = itemsForm[0].FindElement(By.XPath(".//strong"));
+                string itemName = itemNameElement.GetAttribute("innerText");
+
+                itemRemoveButton.Click();
+
+                wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.XPath("//td[@class = 'item' and text() = '" + itemName + "']")));
+            }
+
+            Assert.That(driver.FindElement(By.XPath("//em")).Text, Is.EqualTo("There are no items in your cart."));
         }
 
         [TearDown]

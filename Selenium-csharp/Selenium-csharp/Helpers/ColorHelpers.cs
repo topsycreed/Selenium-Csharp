@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Selenium_csharp.Helpers
 {
+    // TODO:Rewrite using regular expression and Split, becouse not run in Firefox
     /// <summary>  
     /// This class help convert RGBa color into separate canal value and check what it color is.  
     /// </summary> 
