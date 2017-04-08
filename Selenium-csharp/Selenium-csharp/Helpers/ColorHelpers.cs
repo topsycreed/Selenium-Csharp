@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Selenium_csharp.Helpers
 {
-    // TODO:Rewrite using regular expression and Split, becouse not run in Firefox
     /// <summary>  
     /// This class help convert RGBa color into separate canal value and check what it color is.  
     /// </summary> 
@@ -54,93 +54,31 @@ namespace Selenium_csharp.Helpers
         /// <param name="rgbColor">Input canal</param>
         public static int GetCanalValue(string rgbColor, string canal)
         {
-            bool isCanalValue = false;
+            //Match only digital numbers
+            MatchCollection matchList = Regex.Matches(rgbColor, @"\d+");
+            var list = matchList.Cast<Match>().Select(match => match.Value).ToList();
+
             string CanalValue = "";
-            int countSpaces = 0;
 
             switch (canal)
             {
                 case "r":
                 case "R":
-                    for (int i = 0; i < rgbColor.Length; i++)
-                    {
-                        string ch = rgbColor.Substring(i, 1);
-
-                        if (ch == ",")
-                        {
-                            isCanalValue = false;
-                        }
-
-                        if (isCanalValue)
-                        {
-                            CanalValue += ch;
-                        }
-
-                        if (ch == "(")
-                        {
-                            isCanalValue = true;
-                        }
-                    }
+                    CanalValue = list[0].ToString();
                     break;
 
                 case "g":
                 case "G":
-                    for (int i = 0; i < rgbColor.Length; i++)
-                    {
-                        string ch = rgbColor.Substring(i, 1);
-
-                        if (ch == ",")
-                        {
-                            isCanalValue = false;
-                        }
-
-                        if (isCanalValue)
-                        {
-                            CanalValue += ch;
-                        }
-
-                        if (ch == " ")
-                        {
-                            countSpaces++;
-                        }
-
-                        if (ch == " " && countSpaces == 1)
-                        {
-                            isCanalValue = true;
-                        }
-                    }
+                    CanalValue = list[1].ToString();
                     break;
 
                 case "b":
                 case "B":
-                    for (int i = 0; i < rgbColor.Length; i++)
-                    {
-                        string ch = rgbColor.Substring(i, 1);
-
-                        if (ch == ",")
-                        {
-                            isCanalValue = false;
-                        }
-
-                        if (isCanalValue)
-                        {
-                            CanalValue += ch;
-                        }
-
-                        if (ch == " ")
-                        {
-                            countSpaces++;
-                        }
-
-                        if (ch == " " && countSpaces == 2)
-                        {
-                            isCanalValue = true;
-                        }
-                    }
+                    CanalValue = list[2].ToString();
                     break;
 
                 default:
-                    break;
+                    throw new System.ArgumentException("Parameter canal cannot be null", "canal");
             }
             return Int32.Parse(CanalValue);
         }
