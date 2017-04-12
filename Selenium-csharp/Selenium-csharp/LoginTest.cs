@@ -519,6 +519,36 @@ namespace Selenium_csharp
             }
         }
 
+        [Test]
+        public void CheckBrowserLogs()
+        {
+            Login();
+
+            IWebElement catalog = driver.FindElement(By.XPath("//span[@class = 'name' and text() = 'Catalog']"));
+
+            catalog.Click();
+
+            ReadOnlyCollection<IWebElement> products = driver.FindElements(By.XPath("//a[contains(@href, 'edit_product') and @title = 'Edit']"));
+
+            int countOfBrowserLogs = 0;
+
+            for (int i = 0; i < products.Count(); i++)
+            {
+                products[i].Click();
+
+                foreach (LogEntry l in driver.Manage().Logs.GetLog("browser"))
+                {
+                    Console.WriteLine(l);
+                    countOfBrowserLogs++;
+                }
+
+                //Refresh products to avoid StaleElementsException
+                products = driver.FindElements(By.XPath("//a[contains(@href, 'edit_product') and @title = 'Edit']"));
+            }
+
+            Assert.That(countOfBrowserLogs, Is.EqualTo(0));
+        }
+
         [TearDown]
         public void Stop()
         {

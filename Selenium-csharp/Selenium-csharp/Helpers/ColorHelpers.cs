@@ -78,7 +78,7 @@ namespace Selenium_csharp.Helpers
                     break;
 
                 default:
-                    throw new System.ArgumentException("Parameter canal cannot be null", "canal");
+                    throw new System.ArgumentException("Parameter canal cannot be null or not RGB", "canal");
             }
             return Int32.Parse(CanalValue);
         }
