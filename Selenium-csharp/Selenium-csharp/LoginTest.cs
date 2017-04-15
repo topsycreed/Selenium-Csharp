@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
-using Selenium_csharp.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,6 +9,7 @@ using System.Linq;
 using Selenium_csharp.Helpers;
 using System.IO;
 using System.Threading;
+using Selenium_csharp.PageObjects;
 
 namespace Selenium_csharp
 {
@@ -19,11 +18,6 @@ namespace Selenium_csharp
     {
         private IWebDriver driver;
         private WebDriverWait wait;
-
-        bool AreElementsPresent(IWebDriver driver, By locator)
-        {
-            return driver.FindElements(locator).Count > 0;
-        }
 
         [SetUp]
         public void start()
@@ -37,6 +31,11 @@ namespace Selenium_csharp
 
             driver.Manage().Window.Maximize();
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        }
+
+        bool AreElementsPresent(IWebDriver driver, By locator)
+        {
+            return driver.FindElements(locator).Count > 0;
         }
 
         [Test]
@@ -555,6 +554,29 @@ namespace Selenium_csharp
             if (driver != null)
                 driver.Quit();
             driver = null;
+        }
+    }
+
+    [TestFixture]
+    public class PageObjectTest : TestBase
+    {
+        [Test]
+        public void DeleteItemFromRecycleBinUsingPageObject()
+        {
+            Page.Main.NavigateTo();
+
+            int countOfProducts = 3;
+
+            for (int i = 0; i < countOfProducts; i++)
+            {
+                Page.Main.OpenFirstProduct();
+                Page.Product.AddToCart();
+            }
+
+            Page.Basket.Open();
+            Page.Basket.RemoveProducts();
+
+            Assert.That(Page.Basket.GetNoItemMessageText, Is.EqualTo("There are no items in your cart."));
         }
     }
 }
